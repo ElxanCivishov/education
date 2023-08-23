@@ -1,0 +1,31 @@
+interface inputProps {
+  value: string;
+  name: string;
+  checkValidate: boolean;
+  placeholder: string;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const FormInput: React.FC<inputProps> = ({
+  value,
+  handleChange,
+  placeholder,
+  checkValidate,
+  name,
+}) => {
+  return (
+    <input
+      name={name}
+      value={value}
+      onChange={(e) => handleChange(e)}
+      className={`date-input w-full px-3 py-2 bg-LightColor rounded-full border placeholder:text-slate-400 text-gray-600 ${
+        checkValidate && value === ""
+          ? "outline-none  border-red-300 border-2"
+          : "border-transparent outline-[#d9d9d9]"
+      }`}
+      placeholder={placeholder}
+    />
+  );
+};
+
+export default FormInput;
