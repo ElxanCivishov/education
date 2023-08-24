@@ -5,32 +5,17 @@ import BackLink from "../components/BackLink";
 import NextBtn from "../components/NextBtn";
 import Dropdown from "../components/Dropdown";
 
-const subjects: string[] = [
-  "Riyaziyyat",
-  "Tarix",
-  "Coğrafiya",
-  "Ana dili",
-  "İnformatika",
-  "Kimiya",
-  "Fizika",
-  "Rus dili",
-  "İngilis dili",
-];
-
-const olympicsPlaces: string[] = [
-  "1-ci yer (Qızıl medal)",
-  "2-ci yer (Gümüş medal)",
-  "3-ci yer (Bürünc medal)",
-  "4-cü yer",
-];
-
-const olympicsStages: string[] = ["Respublika", "Rayon", "Region", "Dünya"];
+import { subjects, olympicsPlaces, olympicsStages } from "../assets/data";
+import { updateEducationOlympicsLevel } from "../features/education/educationLevelSlice";
+import { useDispatch } from "react-redux";
 
 const olymipcsStatus: string[] = ["Bəli", "Xeyr"];
 
 const Olympics: React.FC = () => {
-  const [checkValidate, setCheckValidate] = useState<boolean>(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [checkValidate, setCheckValidate] = useState<boolean>(false);
   const [selectedStatus, setSelectedStatus] = useState<number>();
 
   const [openSubject, setOpenSubject] = useState<boolean>(false);
@@ -38,41 +23,57 @@ const Olympics: React.FC = () => {
 
   const [openOlympicsStages, setOpenOlympicsStages] = useState<boolean>(false);
   const [selectedOlympicsStages, setSelectedOlympicsStages] =
-    useState<string>();
+    useState<string>("");
 
-  const [dateIsPresent, setDateIsPresent] = useState<boolean>(true);
+  const [openOlympicsPlace, setOpenOlympicsPlace] = useState<boolean>(false);
 
-  const [openApplicationCriteria, setOpenApplicationCriteria] =
-    useState<boolean>(false);
-
-  const [selectedApplicationCriteria, setSelectedApplicationCriteria] =
-    useState<string[]>([]);
+  const [selectedOlympicsPlace, setSelectedOlympicsPlace] =
+    useState<string>("");
 
   const handleSubject = () => {
     setOpenSubject(!openSubject);
-    setOpenApplicationCriteria(false);
+    setOpenOlympicsPlace(false);
     setOpenOlympicsStages(false);
   };
 
   const handleOlympicsStages = () => {
     setOpenSubject(false);
-    setOpenApplicationCriteria(false);
+    setOpenOlympicsPlace(false);
     setOpenOlympicsStages(!openOlympicsStages);
   };
 
-  const handleApplicationCriteria = () => {
+  const handleOlympicsPlace = () => {
     setOpenSubject(false);
     setOpenOlympicsStages(false);
-    setOpenApplicationCriteria(!openApplicationCriteria);
+    setOpenOlympicsPlace(!openOlympicsPlace);
   };
 
-  const handleRemember = () => {
-    navigate("/remember");
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setCheckValidate(true);
+    if (selectedStatus === 0) {
+      if (selectedSubject && selectedOlympicsPlace && selectedOlympicsStages) {
+        dispatch(
+          updateEducationOlympicsLevel({
+            subject: selectedSubject,
+            place: selectedOlympicsPlace,
+            stage: selectedOlympicsStages,
+          })
+        );
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
   };
 
   return (
     <>
-      <form action="" className="flex flex-col gap-5 mb-10 ">
+      <form
+        action=""
+        className="flex flex-col gap-5 mb-10 "
+        onSubmit={handleSubmit}
+      >
         <div className=" min-w-[550px] w-full z-10 rounded-xl bg-transparent  py-8 px-8 h-[610px] overflow-y-auto shadow max-w-lg flex flex-col gap-4">
           <h1 className="text-PrimaryColor text-[18px]">
             Orta texniki və ali təhsil usulları
@@ -109,72 +110,54 @@ const Olympics: React.FC = () => {
             </ul>
           </div>
           {selectedStatus === 0 && (
-            <div className="w-full items-center ">
-              <p className="mb-2">
-                Lokal imtahanın adını, topladığınız bal və maksimal bal qeyd
-                edin:
-              </p>
-              <div className="items-center flex w-full text-sm font-medium text-gray-900 bg-white gap-2 ">
-                <input
-                  className="date-input w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                  placeholder="imtahan"
-                />
-                <input
-                  className="date-input w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                  placeholder="bal"
-                />
-                <input
-                  className="date-input w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                  placeholder="max bal"
+            <>
+              <div className="w-full">
+                <p className="mb-2">
+                  Hansı fənn üzrə olimpiyada qalibi olmusunuz?
+                  <span className="me-1 text-red-500">*</span>
+                </p>
+                <Dropdown
+                  data={subjects}
+                  placeholder="Seçin..."
+                  open={openSubject}
+                  checkValidate={checkValidate}
+                  handleClick={handleSubject}
+                  selectedItem={selectedSubject}
+                  setSelectedItem={setSelectedSubject}
                 />
               </div>
-            </div>
+              <div className="w-full">
+                <p className="mb-2">
+                  Ən yüksək hansı mərhələ üzrə olimpiada qalibi olmusunuz?
+                  <span className="me-1 text-red-500">*</span>
+                </p>
+                <Dropdown
+                  data={olympicsStages}
+                  placeholder="Seçin..."
+                  open={openOlympicsStages}
+                  checkValidate={checkValidate}
+                  handleClick={handleOlympicsStages}
+                  selectedItem={selectedOlympicsStages}
+                  setSelectedItem={setSelectedOlympicsStages}
+                />
+              </div>
+              <div className="w-full">
+                <p className="mb-2">
+                  Neçənci yer əldə etmisiniz?
+                  <span className="me-1 text-red-500">*</span>
+                </p>
+                <Dropdown
+                  data={olympicsPlaces}
+                  placeholder="Seçin..."
+                  open={openOlympicsPlace}
+                  checkValidate={checkValidate}
+                  handleClick={handleOlympicsPlace}
+                  selectedItem={selectedOlympicsPlace}
+                  setSelectedItem={setSelectedOlympicsPlace}
+                />
+              </div>
+            </>
           )}
-          <div className="w-full">
-            <p className="mb-2">
-              Hansı fənn üzrə olimpiyada qalibi olmusunuz?
-              <span className="me-1 text-red-500">*</span>
-            </p>
-            <Dropdown
-              data={subjects}
-              placeholder="Seçin..."
-              open={openSubject}
-              checkValidate={checkValidate}
-              handleClick={handleSubject}
-              selectedItem={selectedSubject}
-              setSelectedItem={setSelectedSubject}
-            />
-          </div>
-          <div className="w-full">
-            <p className="mb-2">
-              Ən yüksək hansı mərhələ üzrə olimpiada qalibi olmusunuz?
-              <span className="me-1 text-red-500">*</span>
-            </p>
-            <Dropdown
-              data={olympicsStages}
-              placeholder="Seçin..."
-              open={openOlympicsStages}
-              checkValidate={checkValidate}
-              handleClick={handleOlympicsStages}
-              selectedItem={selectedSubject}
-              setSelectedItem={setSelectedSubject}
-            />
-          </div>
-          <div className="w-full">
-            <p className="mb-2">
-              Neçənci yer əldə etmisiniz?
-              <span className="me-1 text-red-500">*</span>
-            </p>
-            <Dropdown
-              data={olympicsPlaces}
-              placeholder="Seçin..."
-              open={openSubject}
-              checkValidate={checkValidate}
-              handleClick={handleSubject}
-              selectedItem={selectedSubject}
-              setSelectedItem={setSelectedSubject}
-            />
-          </div>
         </div>
 
         <div className="w-full flex items-center justify-between">

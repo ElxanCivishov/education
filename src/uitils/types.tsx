@@ -4,8 +4,8 @@ export interface DateRange {
 }
 
 export interface localExam {
-  title: string;
   exam: string;
-  examScore: number;
-  totalScore: number;
+  examScore: number | string;
+  totalScore: number | string;
 }
+

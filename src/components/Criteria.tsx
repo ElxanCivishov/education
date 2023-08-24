@@ -3,7 +3,8 @@ import downIcon from "../assets/images/down.svg";
 
 import { applicationCriteria, criteria } from "../assets/data";
 import FormInput from "./FormInput";
-import { localExam } from "../types";
+import { localExam } from "../uitils/types";
+import { appealExam } from "../features/education/educationLevelSlice";
 
 interface criteriaProps {
   checkValidate: boolean;
@@ -11,33 +12,81 @@ interface criteriaProps {
   handleChangeLocalExam: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleApplicationCriteriaChange: () => void;
   openApplicationCriteria: boolean;
+  toggleItemApplicationCriteria: any;
+  selectedApplicationCriteria: appealExam[];
+  handleChangeAppealResults: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    title: string
+  ) => void;
+  setSelectedApplicationCriteria: React.Dispatch<
+    React.SetStateAction<appealExam[]>
+  >;
 }
+console.log(applicationCriteria);
 
 const Criteria: React.FC<criteriaProps> = ({
   handleChangeLocalExam,
   localExamScore,
+  handleChangeAppealResults,
   handleApplicationCriteriaChange,
   checkValidate,
   openApplicationCriteria,
+  toggleItemApplicationCriteria,
+  selectedApplicationCriteria,
+  setSelectedApplicationCriteria,
 }) => {
+  interface Item {
+    title: string;
+    results: {
+      resultOne: string;
+      resultTwo?: string;
+    };
+  }
+  const [items, setItems] = useState<Item[]>([
+    {
+      title: "Attestat - GPA",
+      results: {
+        resultOne: "",
+      },
+    },
+    {
+      title: "Language test (IELTS TOEFL)",
+      results: {
+        resultOne: "",
+        resultTwo: "",
+      },
+    },
+    {
+      title: "GRE/GMAT",
+      results: {
+        resultOne: "",
+      },
+    },
+    {
+      title: "SAT",
+      results: {
+        resultOne: "",
+      },
+    },
+  ]);
+
   const [selectedCriterion, setSelectedCriterion] = useState<
     number | undefined
   >();
 
-  const [selectedApplicationCriteria, setSelectedApplicationCriteria] =
-    useState<string[]>([]);
-
-  const toggleItemApplicationCriteria = (item: string) => {
-    if (selectedApplicationCriteria.includes(item)) {
-      setSelectedApplicationCriteria((prevSelectedItems) =>
-        prevSelectedItems.filter((selectedItem) => selectedItem !== item)
-      );
-    } else {
-      setSelectedApplicationCriteria((prevSelectedItems) => [
-        ...prevSelectedItems,
-        item,
-      ]);
-    }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    title: string,
+    field: "resultOne" | "resultTwo"
+  ) => {
+    const updatedItems = [...items];
+    updatedItems.map((item) => {
+      if (item.title === title) {
+        return (item.results[field] = e.target.value);
+      }
+    });
+    setItems(updatedItems);
+    console.log(items);
   };
 
   return (
@@ -70,12 +119,13 @@ const Criteria: React.FC<criteriaProps> = ({
       </div>
 
       {(selectedCriterion === 0 || selectedCriterion === 2) && (
-        <div className="w-full items-center ">
+        <div className="w-full items-center mt-3 ">
           <p className="mb-2">
             Lokal imtahanın adını, topladığınız bal və maksimal bal qeyd edin:
           </p>
           <div className="items-center flex w-full text-sm font-medium text-gray-900 bg-white gap-2 ">
             <FormInput
+              type="text"
               value={localExamScore.exam}
               handleChange={handleChangeLocalExam}
               placeholder="imtahan"
@@ -83,14 +133,16 @@ const Criteria: React.FC<criteriaProps> = ({
               name="exam"
             />
             <FormInput
-              value="0"
+              type="text"
+              value={localExamScore.examScore}
               handleChange={handleChangeLocalExam}
               placeholder="balınız"
               checkValidate={checkValidate}
               name="examScore"
             />
             <FormInput
-              value="0"
+              type="text"
+              value={localExamScore.totalScore}
               handleChange={handleChangeLocalExam}
               placeholder="max bal"
               checkValidate={checkValidate}
@@ -101,7 +153,7 @@ const Criteria: React.FC<criteriaProps> = ({
       )}
 
       {(selectedCriterion === 1 || selectedCriterion === 2) && (
-        <div className="w-full">
+        <div className="w-full mt-3">
           <p className="mb-2 mt-3">
             Müraciət zamanı hansı kriteriyalarla müraciətinizin
             qiymətləndirildiyini qeyd edin:
@@ -112,11 +164,17 @@ const Criteria: React.FC<criteriaProps> = ({
                 className="flex items-center justify-between px-3 py-2  bg-LightColor rounded-full w-full"
                 onClick={() => handleApplicationCriteriaChange()}
               >
-                <span className="min-h-[25px] text-slate-400">
+                <span
+                  className={`min-h-[25px] ${
+                    selectedApplicationCriteria.length > 0
+                      ? "text-PrimaryColor"
+                      : "text-slate-400"
+                  }`}
+                >
                   {selectedApplicationCriteria.length > 0
                     ? selectedApplicationCriteria[
                         selectedApplicationCriteria.length - 1
-                      ]
+                      ].title
                     : "Seçin..."}
                 </span>
                 <span className="pr-2">
@@ -150,7 +208,9 @@ const Criteria: React.FC<criteriaProps> = ({
                             toggleItemApplicationCriteria(appCriteria);
                           }}
                         >
-                          <span className="text-[14px]">{appCriteria}</span>
+                          <span className="text-[14px]">
+                            {appCriteria.title}
+                          </span>
                           <span
                             className={`w-3 h-3 opacity-0 rounded-full mx-3 group-hover:opacity-100 border border-BorderColor ${
                               selectedApplicationCriteria.includes(appCriteria)
@@ -165,154 +225,103 @@ const Criteria: React.FC<criteriaProps> = ({
               </div>
             )}
           </label>
-          {selectedApplicationCriteria.includes("Attestat - GPA") && (
-            <div className="border rounded-lg p-5 mt-5 relative">
-              <p>
-                <span className="text-PrimaryColor me-1">Attestat - GPA</span>
-                üzrə, nəticəni qeyd edin
-              </p>
-              <span
-                className="absolute right-4 top-5"
-                onClick={() => toggleItemApplicationCriteria("Attestat - GPA")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                  aria-hidden="true"
-                  role="img"
-                  className="cursor-pointer text-2xl text-[#EE4A4A]/75 hover:text-[#EE4A4A]"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
+          {selectedApplicationCriteria.map((selAppCri, index) => {
+            if (selAppCri.title === "Language test (IELTS TOEFL)") {
+              return (
+                <div
+                  className="border rounded-lg p-5 mt-5 relative"
+                  key={selAppCri.title}
                 >
-                  <path
-                    fill="currentColor"
-                    d="M12 3c-4.963 0-9 4.038-9 9s4.037 9 9 9s9-4.038 9-9s-4.037-9-9-9zm0 16c-3.859 0-7-3.14-7-7s3.141-7 7-7s7 3.14 7 7s-3.141 7-7 7zm.707-7l2.646-2.646a.502.502 0 0 0 0-.707a.502.502 0 0 0-.707 0L12 11.293L9.354 8.646a.5.5 0 0 0-.707.707L11.293 12l-2.646 2.646a.5.5 0 0 0 .707.708L12 12.707l2.646 2.646a.5.5 0 1 0 .708-.706L12.707 12z"
-                  ></path>
-                </svg>
-              </span>
-
-              <input
-                type="text"
-                className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                placeholder="Nəticə"
-              />
-            </div>
-          )}
-          {selectedApplicationCriteria.includes(
-            "Language test (IELTS TOEFL)"
-          ) && (
-            <div className="border rounded-lg p-5 mt-5 relative">
-              <p>
-                <span className="text-PrimaryColor me-1">
-                  Language test (IELTS TOEFL)
-                </span>
-                üzrə, nəticəni qeyd edin
-              </p>
-              <span
-                className="absolute right-4 top-5"
-                onClick={() =>
-                  toggleItemApplicationCriteria("Language test (IELTS TOEFL)")
-                }
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                  aria-hidden="true"
-                  role="img"
-                  className="cursor-pointer text-2xl text-[#EE4A4A]/75 hover:text-[#EE4A4A]"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
+                  <p>
+                    <span className="text-PrimaryColor me-1">
+                      {selAppCri.title}
+                    </span>
+                    üzrə, nəticəni qeyd edin
+                  </p>
+                  <span
+                    className="absolute right-4 top-5"
+                    onClick={() => toggleItemApplicationCriteria(selAppCri)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      aria-hidden="true"
+                      role="img"
+                      className="cursor-pointer text-2xl text-[#EE4A4A]/75 hover:text-[#EE4A4A]"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M12 3c-4.963 0-9 4.038-9 9s4.037 9 9 9s9-4.038 9-9s-4.037-9-9-9zm0 16c-3.859 0-7-3.14-7-7s3.141-7 7-7s7 3.14 7 7s-3.141 7-7 7zm.707-7l2.646-2.646a.502.502 0 0 0 0-.707a.502.502 0 0 0-.707 0L12 11.293L9.354 8.646a.5.5 0 0 0-.707.707L11.293 12l-2.646 2.646a.5.5 0 0 0 .707.708L12 12.707l2.646 2.646a.5.5 0 1 0 .708-.706L12.707 12z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <div className="flex gap-3 w-full items-center">
+                    <input
+                      type="text"
+                      placeholder="IELTS nəticə"
+                      className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400"
+                      onChange={(e) =>
+                        handleInputChange(e, selAppCri.title, "resultOne")
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="TOEFL nəticə"
+                      className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400"
+                      onChange={(e) =>
+                        handleInputChange(e, selAppCri.title, "resultTwo")
+                      }
+                    />
+                  </div>
+                </div>
+              );
+            } else {
+              return (
+                <div
+                  className="border rounded-lg p-5 mt-5 relative"
+                  key={selAppCri.title}
                 >
-                  <path
-                    fill="currentColor"
-                    d="M12 3c-4.963 0-9 4.038-9 9s4.037 9 9 9s9-4.038 9-9s-4.037-9-9-9zm0 16c-3.859 0-7-3.14-7-7s3.141-7 7-7s7 3.14 7 7s-3.141 7-7 7zm.707-7l2.646-2.646a.502.502 0 0 0 0-.707a.502.502 0 0 0-.707 0L12 11.293L9.354 8.646a.5.5 0 0 0-.707.707L11.293 12l-2.646 2.646a.5.5 0 0 0 .707.708L12 12.707l2.646 2.646a.5.5 0 1 0 .708-.706L12.707 12z"
-                  ></path>
-                </svg>
-              </span>
-              <div className="flex gap-3 w-full items-center">
-                <input
-                  type="text"
-                  className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                  placeholder="IELTS nəticə"
-                />
-                <input
-                  type="text"
-                  className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600 "
-                  placeholder="TOEFL nəticə"
-                />
-              </div>
-            </div>
-          )}
-          {selectedApplicationCriteria.includes("GRE/GMAT") && (
-            <div className="border rounded-lg p-5 mt-5 relative">
-              <p>
-                <span className="text-PrimaryColor me-1">GRE/GMAT</span>
-                üzrə, nəticəni qeyd edin
-              </p>
-              <span
-                className="absolute right-4 top-5"
-                onClick={() => toggleItemApplicationCriteria("GRE/GMAT")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                  aria-hidden="true"
-                  role="img"
-                  className="cursor-pointer text-2xl text-[#EE4A4A]/75 hover:text-[#EE4A4A] "
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M12 3c-4.963 0-9 4.038-9 9s4.037 9 9 9s9-4.038 9-9s-4.037-9-9-9zm0 16c-3.859 0-7-3.14-7-7s3.141-7 7-7s7 3.14 7 7s-3.141 7-7 7zm.707-7l2.646-2.646a.502.502 0 0 0 0-.707a.502.502 0 0 0-.707 0L12 11.293L9.354 8.646a.5.5 0 0 0-.707.707L11.293 12l-2.646 2.646a.5.5 0 0 0 .707.708L12 12.707l2.646 2.646a.5.5 0 1 0 .708-.706L12.707 12z"
-                  ></path>
-                </svg>
-              </span>
-
-              <input
-                type="text"
-                className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                placeholder="Nəticə"
-              />
-            </div>
-          )}
-          {selectedApplicationCriteria.includes("SAT") && (
-            <div className="border rounded-lg p-5 mt-5 relative">
-              <p>
-                <span className="text-PrimaryColor me-1">SAT</span>
-                üzrə, nəticəni qeyd edin
-              </p>
-              <span
-                className="absolute right-4 top-5"
-                onClick={() => toggleItemApplicationCriteria("SAT")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                  aria-hidden="true"
-                  role="img"
-                  className="cursor-pointer text-2xl text-[#EE4A4A]/75 hover:text-[#EE4A4A]"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M12 3c-4.963 0-9 4.038-9 9s4.037 9 9 9s9-4.038 9-9s-4.037-9-9-9zm0 16c-3.859 0-7-3.14-7-7s3.141-7 7-7s7 3.14 7 7s-3.141 7-7 7zm.707-7l2.646-2.646a.502.502 0 0 0 0-.707a.502.502 0 0 0-.707 0L12 11.293L9.354 8.646a.5.5 0 0 0-.707.707L11.293 12l-2.646 2.646a.5.5 0 0 0 .707.708L12 12.707l2.646 2.646a.5.5 0 1 0 .708-.706L12.707 12z"
-                  ></path>
-                </svg>
-              </span>
-
-              <input
-                type="text"
-                className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
-                placeholder="Nəticə"
-              />
-            </div>
-          )}
+                  <p>
+                    <span className="text-PrimaryColor me-1">
+                      {selAppCri.title}
+                    </span>
+                    üzrə, nəticəni qeyd edin
+                  </p>
+                  <span
+                    className="absolute right-4 top-5"
+                    onClick={() => toggleItemApplicationCriteria(selAppCri)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      aria-hidden="true"
+                      role="img"
+                      className="cursor-pointer text-2xl text-[#EE4A4A]/75 hover:text-[#EE4A4A]"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M12 3c-4.963 0-9 4.038-9 9s4.037 9 9 9s9-4.038 9-9s-4.037-9-9-9zm0 16c-3.859 0-7-3.14-7-7s3.141-7 7-7s7 3.14 7 7s-3.141 7-7 7zm.707-7l2.646-2.646a.502.502 0 0 0 0-.707a.502.502 0 0 0-.707 0L12 11.293L9.354 8.646a.5.5 0 0 0-.707.707L11.293 12l-2.646 2.646a.5.5 0 0 0 .707.708L12 12.707l2.646 2.646a.5.5 0 1 0 .708-.706L12.707 12z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Nəticə"
+                    className="mt-3 w-full px-4 py-2 bg-LightColor rounded-full border outline-[#d9d9d9] placeholder:text-slate-400 text-gray-600"
+                    onChange={(e) =>
+                      handleInputChange(e, selAppCri.title, "resultOne")
+                    }
+                  />
+                </div>
+              );
+            }
+          })}
         </div>
       )}
     </div>

@@ -1,28 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "../components/Dropdown";
 import NextBtn from "../components/NextBtn";
 import Level from "../components/Level";
 
-const employments: string[] = [
-  "Təhsil alıram",
-  "Çalışıram",
-  "İşsiz",
-  "Təhsil alıram və çalışıram",
-  "Təhsil almıram",
-];
+import {
+  employments,
+  mediumSchoolResults,
+  educationLevels,
+} from "../assets/data";
 
-const educationLevels: string[] = [
-  "Orta təhsil",
-  "Peşə təhsili",
-  "Bakalavr",
-  "Magistr",
-  "PhD",
-];
-
-const mediumSchoolResults: string[] = ["Zərbəçi", "Əlaçı", "Heç biri"];
+import { useDispatch } from "react-redux";
+import { updateEducationFirstLevel } from "../features/education/educationLevelSlice";
 
 const EducationLevel: React.FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [openEmployment, setOpenEmployment] = useState<boolean>(false);
@@ -57,10 +49,15 @@ const EducationLevel: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedEdu && selectedEmployment && selectedSchoolResult) {
+      dispatch(
+        updateEducationFirstLevel({
+          employment: selectedEmployment,
+          edu: selectedEdu,
+          schollResult: selectedSchoolResult,
+        })
+      );
       if (selectedEdu === "Orta təhsil") {
         navigate("/olympics");
-      } else if (selectedEdu === "Peşə təhsili") {
-        navigate("/vocation");
       } else {
         navigate("/technical-and-higher");
       }

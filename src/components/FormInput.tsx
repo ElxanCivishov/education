@@ -1,13 +1,15 @@
 interface inputProps {
-  value: string;
+  value: string | number;
+  type: string;
   name: string;
-  checkValidate: boolean;
-  placeholder: string;
+  checkValidate?: boolean;
+  placeholder?: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const FormInput: React.FC<inputProps> = ({
   value,
+  type,
   handleChange,
   placeholder,
   checkValidate,
@@ -15,6 +17,7 @@ const FormInput: React.FC<inputProps> = ({
 }) => {
   return (
     <input
+      type={type}
       name={name}
       value={value}
       onChange={(e) => handleChange(e)}

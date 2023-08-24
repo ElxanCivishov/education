@@ -5,30 +5,28 @@ import DateInput from "../components/DateInput";
 import DateInputWithPresent from "../components/DateInputWithPresent";
 import NextBtn from "../components/NextBtn";
 
-import { countries, professions } from "../assets/data";
-
 import Level from "../components/Level";
 import FormInput from "../components/FormInput";
 import BackLink from "../components/BackLink";
-import { DateRange, localExam } from "../types";
+import { DateRange, localExam } from "../uitils/types";
 import InputWithPresentCheckbox from "../components/InputWithPresentCheckbox";
 import Criteria from "../components/Criteria";
 import SaveButton from "../components/SaveButton";
 
-const initialDateRange: DateRange = {
-  startDate: "",
-  endDate: "",
-};
+import { countries, professions } from "../assets/data";
 
-const initialLocalExam: localExam = {
-  title: "Local imtahan",
-  exam: "",
-  examScore: 0,
-  totalScore: 0,
-};
+import { initialDateRange, initialLocalExam } from "../uitils/initialValues";
+
+import { useDispatch } from "react-redux";
+import {
+  addEducation,
+  appealExam,
+} from "../features/education/educationLevelSlice";
+import { RootState } from "../app/store";
 
 const TechnicalAndHigher: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [checkValidate, setCheckValidate] = useState<boolean>(false);
 
   const [openCountry, setOpenCountry] = useState<boolean>(false);
@@ -43,9 +41,6 @@ const TechnicalAndHigher: React.FC = () => {
 
   const [localExamScore, setLocalExamScore] =
     useState<localExam>(initialLocalExam);
-
-  const [openApplicationCriteria, setOpenApplicationCriteria] =
-    useState<boolean>(false);
 
   const handleChangeLocalExam = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,6 +77,44 @@ const TechnicalAndHigher: React.FC = () => {
     setOpenApplicationCriteria(false);
   };
 
+  // ! appeal
+
+  const [openApplicationCriteria, setOpenApplicationCriteria] =
+    useState<boolean>(false);
+
+  const [selectedApplicationCriteria, setSelectedApplicationCriteria] =
+    useState<appealExam[]>([]);
+
+  const toggleItemApplicationCriteria = (item: appealExam) => {
+    const existingIndex = selectedApplicationCriteria.findIndex(
+      (el) => el.title === item.title
+    );
+
+    if (existingIndex !== -1) {
+      setSelectedApplicationCriteria((prevSelectedItems) => {
+        const updatedItems = [...prevSelectedItems];
+        updatedItems.splice(existingIndex, 1);
+        return updatedItems;
+      });
+    } else {
+      setSelectedApplicationCriteria((prevSelectedItems) => [
+        ...prevSelectedItems,
+        item,
+      ]);
+    }
+  };
+
+  const handleChangeAppealResults = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    title: string
+  ) => {
+    const { name, value } = e.target;
+    selectedApplicationCriteria.map((item) => console.log(item));
+    setLocalExamScore({ ...localExamScore, [name]: value });
+  };
+
+  console.log(selectedApplicationCriteria);
+
   const handleApplicationCriteriaChange = () => {
     setOpenCountry(false);
     setOpenPrefession(false);
@@ -89,6 +122,17 @@ const TechnicalAndHigher: React.FC = () => {
   };
 
   const handleSaveButton = () => {
+    const updatedVocationData = {
+      educationType: "12",
+      country: selectedCountry,
+      companyName: collageName,
+      profession: selectedPrefession,
+      dateRange,
+      localExam: localExamScore.exam ? localExamScore : undefined,
+      appealExam: selectedApplicationCriteria,
+    };
+
+    dispatch(addEducation(updatedVocationData));
     navigate("/remember");
   };
 
@@ -120,7 +164,7 @@ const TechnicalAndHigher: React.FC = () => {
 
           <div className="w-full">
             <p className="mb-2 text-PrimaryColor">
-              Bakalavr -
+              Peşə təhsili-
               <span className="text-black ms-1">
                 təhsilinizlə bağlı detalları qeyd edin:
               </span>
@@ -137,8 +181,9 @@ const TechnicalAndHigher: React.FC = () => {
             />
           </div>
           <div className="w-full">
-            <p className="mb-2">Universitetin adı:</p>
+            <p className="mb-2">Kollecin adı:</p>
             <FormInput
+              type="text"
               value={collageName}
               name="collageName"
               checkValidate={checkValidate}
@@ -160,7 +205,7 @@ const TechnicalAndHigher: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 w-full">
             <div className="flex flex-col w-full">
-              <p className="mb-2">Universitetə qəbul olma tarixi:</p>
+              <p className="mb-2">Kollecə qəbul olma tarixi:</p>
               <DateInput
                 name="startDate"
                 checkValidate={checkValidate}
@@ -169,7 +214,7 @@ const TechnicalAndHigher: React.FC = () => {
               />
             </div>
             <div className="flex flex-col w-full">
-              <p className="mb-2">Universiteti bitirmə tarixi:</p>
+              <p className="mb-2">Kolleci bitirmə tarixi:</p>
               <DateInputWithPresent
                 name="endDate"
                 checkValidate={checkValidate}
@@ -192,6 +237,10 @@ const TechnicalAndHigher: React.FC = () => {
             checkValidate={checkValidate}
             localExamScore={localExamScore}
             handleChangeLocalExam={handleChangeLocalExam}
+            handleChangeAppealResults={handleChangeAppealResults}
+            toggleItemApplicationCriteria={toggleItemApplicationCriteria}
+            selectedApplicationCriteria={selectedApplicationCriteria}
+            setSelectedApplicationCriteria={setSelectedApplicationCriteria}
           />
           <div className="flex items-center justify-center w-full mt-5 mb-10">
             <SaveButton handleClick={handleSaveButton} text="Yadda saxla" />

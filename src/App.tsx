@@ -5,7 +5,6 @@ import {
   Olympics,
   Remember,
   TechnicalAndHigher,
-  Vocation,
 } from "./containers";
 
 function App() {
@@ -18,7 +17,6 @@ function App() {
             path="/technical-and-higher"
             element={<TechnicalAndHigher />}
           />
-          <Route path="/vocation" element={<Vocation />} />
           <Route path="/remember" element={<Remember />} />
           <Route path="/olympics" element={<Olympics />} />
         </Route>
