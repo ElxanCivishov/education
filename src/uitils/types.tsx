@@ -9,3 +9,10 @@ export interface localExam {
   totalScore: number | string;
 }
 
+export interface appealExamProps {
+  title: string;
+  results: {
+    resultOne: string;
+    resultTwo?: string;
+  };
+}

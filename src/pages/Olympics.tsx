@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Level from "../components/Level";
-import BackLink from "../components/BackLink";
-import NextBtn from "../components/NextBtn";
-import Dropdown from "../components/Dropdown";
+import { useDispatch } from "react-redux";
+
+import { Level, BackLink, NextBtn, Dropdown } from "../components";
 
 import { subjects, olympicsPlaces, olympicsStages } from "../assets/data";
 import { updateEducationOlympicsLevel } from "../features/education/educationLevelSlice";
-import { useDispatch } from "react-redux";
 
 const olymipcsStatus: string[] = ["Bəli", "Xeyr"];
 
@@ -161,7 +159,7 @@ const Olympics: React.FC = () => {
         </div>
 
         <div className="w-full flex items-center justify-between">
-          <BackLink text="Geri" path="/" />
+          <BackLink text="Geri" path="/technical-and-higher" />
           <NextBtn text="Növbəti" />
         </div>
       </form>

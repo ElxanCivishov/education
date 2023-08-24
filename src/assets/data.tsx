@@ -16,6 +16,13 @@ export const educationLevels: string[] = [
   "PhD",
 ];
 
+export const eduLevels: string[] = [
+  "Peşə təhsili",
+  "Bakalavr",
+  "Magistr",
+  "PhD",
+];
+
 export const mediumSchoolResults: string[] = ["Zərbəçi", "Əlaçı", "Heç biri"];
 
 export const countries: string[] = [

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Dropdown from "../components/Dropdown";
-import NextBtn from "../components/NextBtn";
-import Level from "../components/Level";
+import { useDispatch, useSelector } from "react-redux";
+import { Dropdown, Level, NextBtn } from "../components";
 
 import {
   employments,
@@ -10,10 +9,13 @@ import {
   educationLevels,
 } from "../assets/data";
 
-import { useDispatch } from "react-redux";
 import { updateEducationFirstLevel } from "../features/education/educationLevelSlice";
+import { RootState } from "../app/store";
 
 const EducationLevel: React.FC = () => {
+  const { educationSecondLevel } = useSelector(
+    (state: RootState) => state.educationLevel
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -48,7 +50,10 @@ const EducationLevel: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedEdu && selectedEmployment && selectedSchoolResult) {
+
+    if (educationSecondLevel.length > 0) {
+      navigate("/technical-and-higher");
+    } else if (selectedEdu && selectedEmployment && selectedSchoolResult) {
       dispatch(
         updateEducationFirstLevel({
           employment: selectedEmployment,

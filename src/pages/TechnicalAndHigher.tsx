@@ -1,36 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DropdownWithSearch from "../components/DropdownWithSearch";
-import DateInput from "../components/DateInput";
-import DateInputWithPresent from "../components/DateInputWithPresent";
-import NextBtn from "../components/NextBtn";
+import { useDispatch, useSelector } from "react-redux";
 
-import Level from "../components/Level";
-import FormInput from "../components/FormInput";
-import BackLink from "../components/BackLink";
-import { DateRange, localExam } from "../uitils/types";
-import InputWithPresentCheckbox from "../components/InputWithPresentCheckbox";
-import Criteria from "../components/Criteria";
-import SaveButton from "../components/SaveButton";
-
-import { countries, professions } from "../assets/data";
-
+import { DateRange, appealExamProps, localExam } from "../uitils/types";
+import { countries, eduLevels, professions } from "../assets/data";
 import { initialDateRange, initialLocalExam } from "../uitils/initialValues";
 
-import { useDispatch } from "react-redux";
 import {
   addEducation,
   appealExam,
 } from "../features/education/educationLevelSlice";
+
 import { RootState } from "../app/store";
+import {
+  BackLink,
+  Criteria,
+  DateInputWithPresent,
+  Dropdown,
+  FormInput,
+  InputWithPresentCheckbox,
+  Level,
+  NextBtn,
+  SaveButton,
+  DropdownWithSearch,
+  DateInput,
+} from "../components";
 
 const TechnicalAndHigher: React.FC = () => {
+  const { educationSecondLevel, educationFirstLevel } = useSelector(
+    (state: RootState) => state.educationLevel
+  );
+
+  useEffect(() => {
+    if (
+      !educationFirstLevel.edu ||
+      !educationFirstLevel.employment ||
+      !educationFirstLevel.schollResult
+    ) {
+      navigate("/");
+    }
+  }, []);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [appealItems, setAppealItems] = useState<appealExamProps[]>([]);
+
   const [checkValidate, setCheckValidate] = useState<boolean>(false);
 
   const [openCountry, setOpenCountry] = useState<boolean>(false);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+
+  const [openEdu, setOpenEdu] = useState<boolean>(false);
+  const [selectedEdu, setSelectedEdu] = useState<string>("");
 
   const [openPrefession, setOpenPrefession] = useState<boolean>(false);
   const [selectedPrefession, setSelectedPrefession] = useState<string>("");
@@ -65,20 +87,35 @@ const TechnicalAndHigher: React.FC = () => {
     }
   };
 
+  const handleSelectEdu = () => {
+    setOpenCountry(false);
+    setOpenPrefession(false);
+    setOpenApplicationCriteria(false);
+    setOpenEdu(!openEdu);
+  };
+
   const handleCountry = () => {
     setOpenCountry(!openCountry);
     setOpenPrefession(false);
+    setOpenEdu(false);
     setOpenApplicationCriteria(false);
   };
 
   const handlePrefession = () => {
     setOpenCountry(false);
+    setOpenEdu(false);
     setOpenPrefession(!openPrefession);
     setOpenApplicationCriteria(false);
   };
 
-  // ! appeal
+  const handleApplicationCriteriaChange = () => {
+    setOpenCountry(false);
+    setOpenPrefession(false);
+    setOpenEdu(false);
+    setOpenApplicationCriteria(!openApplicationCriteria);
+  };
 
+  // ! appeal
   const [openApplicationCriteria, setOpenApplicationCriteria] =
     useState<boolean>(false);
 
@@ -94,6 +131,11 @@ const TechnicalAndHigher: React.FC = () => {
       setSelectedApplicationCriteria((prevSelectedItems) => {
         const updatedItems = [...prevSelectedItems];
         updatedItems.splice(existingIndex, 1);
+        const updatedAppealItems = appealItems.filter(
+          (appeal) => appeal.title !== item.title
+        );
+        setAppealItems(updatedAppealItems);
+        console.log(updatedAppealItems);
         return updatedItems;
       });
     } else {
@@ -101,45 +143,55 @@ const TechnicalAndHigher: React.FC = () => {
         ...prevSelectedItems,
         item,
       ]);
+      setAppealItems((appealItems) => [...appealItems, item]);
+      console.log(appealItems);
     }
   };
 
-  const handleChangeAppealResults = (
+  const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    title: string
+    title: string,
+    field: "resultOne" | "resultTwo"
   ) => {
-    const { name, value } = e.target;
-    selectedApplicationCriteria.map((item) => console.log(item));
-    setLocalExamScore({ ...localExamScore, [name]: value });
-  };
-
-  console.log(selectedApplicationCriteria);
-
-  const handleApplicationCriteriaChange = () => {
-    setOpenCountry(false);
-    setOpenPrefession(false);
-    setOpenApplicationCriteria(!openApplicationCriteria);
+    const updatedItems = [...appealItems];
+    updatedItems.map((item) => {
+      if (item.title === title) {
+        return (item.results[field] = e.target.value);
+      }
+    });
+    setAppealItems(updatedItems);
+    console.log(appealItems);
   };
 
   const handleSaveButton = () => {
-    const updatedVocationData = {
-      educationType: "12",
-      country: selectedCountry,
-      companyName: collageName,
-      profession: selectedPrefession,
-      dateRange,
-      localExam: localExamScore.exam ? localExamScore : undefined,
-      appealExam: selectedApplicationCriteria,
-    };
+    if (
+      selectedCountry &&
+      collageName &&
+      selectedPrefession &&
+      dateRange.startDate &&
+      dateRange.endDate
+    ) {
+      const updatedVocationData = {
+        educationType: selectedEdu ? selectedEdu : educationFirstLevel.edu,
+        country: selectedCountry,
+        companyName: collageName,
+        profession: selectedPrefession,
+        dateRange,
+        localExam: localExamScore.exam ? localExamScore : undefined,
+        appealExam: appealItems,
+      };
 
-    dispatch(addEducation(updatedVocationData));
-    navigate("/remember");
+      dispatch(addEducation(updatedVocationData));
+      navigate("/remember");
+    } else {
+      setCheckValidate(true);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedCountry) {
-      navigate("/remember");
+    if (educationSecondLevel.length > 0) {
+      navigate("/olympics");
     } else {
       setCheckValidate(true);
     }
@@ -162,14 +214,48 @@ const TechnicalAndHigher: React.FC = () => {
             <Level level={3} active={false} />
           </div>
 
+          {educationSecondLevel.length > 0 && (
+            <div className="w-full">
+              <p className="mb-2 text-PrimaryColor">
+                {educationFirstLevel.edu === "Peşə təhsili" &&
+                educationSecondLevel.length === 0
+                  ? "Peşə təhsili - "
+                  : educationFirstLevel.edu !== "Peşə təhsili" &&
+                    educationSecondLevel.length === 0
+                  ? "Bakalavr - "
+                  : educationFirstLevel.edu !== "Peşə təhsili" &&
+                    educationSecondLevel.length === 1
+                  ? "Magistr"
+                  : educationFirstLevel.edu !== "Peşə təhsili" &&
+                    educationSecondLevel.length === 2
+                  ? "HbD"
+                  : educationSecondLevel.length + 1 + "-ci"}
+
+                <span className="text-black ms-1">təhsilinizi qeyd edin</span>
+              </p>
+              <Dropdown
+                data={eduLevels}
+                placeholder="Seçin..."
+                open={openEdu}
+                checkValidate={checkValidate}
+                handleClick={handleSelectEdu}
+                selectedItem={selectedEdu}
+                setSelectedItem={setSelectedEdu}
+              />
+            </div>
+          )}
           <div className="w-full">
             <p className="mb-2 text-PrimaryColor">
-              Peşə təhsili-
+              {selectedEdu
+                ? selectedEdu
+                : educationFirstLevel.edu === "Peşə təhsili" &&
+                  educationSecondLevel.length === 0
+                ? "Peşə təhsili"
+                : educationSecondLevel.length + 1 + "-ci"}
               <span className="text-black ms-1">
                 təhsilinizlə bağlı detalları qeyd edin:
               </span>
             </p>
-
             <DropdownWithSearch
               data={countries}
               open={openCountry}
@@ -181,7 +267,15 @@ const TechnicalAndHigher: React.FC = () => {
             />
           </div>
           <div className="w-full">
-            <p className="mb-2">Kollecin adı:</p>
+            <p className="mb-2">
+              {educationSecondLevel.length === 0 &&
+              educationFirstLevel.edu === "Peşə təhsili"
+                ? "Kollecin "
+                : selectedEdu === "Peşə təhsili"
+                ? "Kollecin "
+                : "Universitet "}
+              adı:
+            </p>
             <FormInput
               type="text"
               value={collageName}
@@ -205,7 +299,15 @@ const TechnicalAndHigher: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 w-full">
             <div className="flex flex-col w-full">
-              <p className="mb-2">Kollecə qəbul olma tarixi:</p>
+              <p className="mb-2">
+                {educationSecondLevel.length === 0 &&
+                educationFirstLevel.edu === "Peşə təhsili"
+                  ? "Kollecə "
+                  : selectedEdu === "Peşə təhsili"
+                  ? "Kollecə "
+                  : "Universitetə "}
+                qəbul olma tarixi:
+              </p>
               <DateInput
                 name="startDate"
                 checkValidate={checkValidate}
@@ -214,7 +316,15 @@ const TechnicalAndHigher: React.FC = () => {
               />
             </div>
             <div className="flex flex-col w-full">
-              <p className="mb-2">Kolleci bitirmə tarixi:</p>
+              <p className="mb-2">
+                {educationSecondLevel.length === 0 &&
+                educationFirstLevel.edu === "Peşə təhsili"
+                  ? "Kolleci "
+                  : selectedEdu === "Peşə təhsili"
+                  ? "Kolleci "
+                  : "Universiteti "}
+                bitirmə tarixi:
+              </p>
               <DateInputWithPresent
                 name="endDate"
                 checkValidate={checkValidate}
@@ -237,10 +347,9 @@ const TechnicalAndHigher: React.FC = () => {
             checkValidate={checkValidate}
             localExamScore={localExamScore}
             handleChangeLocalExam={handleChangeLocalExam}
-            handleChangeAppealResults={handleChangeAppealResults}
             toggleItemApplicationCriteria={toggleItemApplicationCriteria}
             selectedApplicationCriteria={selectedApplicationCriteria}
-            setSelectedApplicationCriteria={setSelectedApplicationCriteria}
+            handleInputChange={handleInputChange}
           />
           <div className="flex items-center justify-center w-full mt-5 mb-10">
             <SaveButton handleClick={handleSaveButton} text="Yadda saxla" />

@@ -14,80 +14,26 @@ interface criteriaProps {
   openApplicationCriteria: boolean;
   toggleItemApplicationCriteria: any;
   selectedApplicationCriteria: appealExam[];
-  handleChangeAppealResults: (
+  handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement>,
-    title: string
+    title: string,
+    field: "resultOne" | "resultTwo"
   ) => void;
-  setSelectedApplicationCriteria: React.Dispatch<
-    React.SetStateAction<appealExam[]>
-  >;
 }
-console.log(applicationCriteria);
 
 const Criteria: React.FC<criteriaProps> = ({
   handleChangeLocalExam,
   localExamScore,
-  handleChangeAppealResults,
   handleApplicationCriteriaChange,
   checkValidate,
   openApplicationCriteria,
   toggleItemApplicationCriteria,
   selectedApplicationCriteria,
-  setSelectedApplicationCriteria,
+  handleInputChange,
 }) => {
-  interface Item {
-    title: string;
-    results: {
-      resultOne: string;
-      resultTwo?: string;
-    };
-  }
-  const [items, setItems] = useState<Item[]>([
-    {
-      title: "Attestat - GPA",
-      results: {
-        resultOne: "",
-      },
-    },
-    {
-      title: "Language test (IELTS TOEFL)",
-      results: {
-        resultOne: "",
-        resultTwo: "",
-      },
-    },
-    {
-      title: "GRE/GMAT",
-      results: {
-        resultOne: "",
-      },
-    },
-    {
-      title: "SAT",
-      results: {
-        resultOne: "",
-      },
-    },
-  ]);
-
   const [selectedCriterion, setSelectedCriterion] = useState<
     number | undefined
   >();
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    title: string,
-    field: "resultOne" | "resultTwo"
-  ) => {
-    const updatedItems = [...items];
-    updatedItems.map((item) => {
-      if (item.title === title) {
-        return (item.results[field] = e.target.value);
-      }
-    });
-    setItems(updatedItems);
-    console.log(items);
-  };
 
   return (
     <div>

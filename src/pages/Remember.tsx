@@ -1,17 +1,39 @@
-import { Link } from "react-router-dom";
-import arrowRight from "../assets/images/arrow-right.svg";
-import arrowLeft from "../assets/images/arrow-left.svg";
-import Level from "../components/Level";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
+import { BackLink, Level, NextBtn } from "../components";
+import { deleteEducation } from "../features/education/educationLevelSlice";
+
 const Remember: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { educationSecondLevel } = useSelector(
     (state: RootState) => state.educationLevel
   );
+
+  useEffect(() => {
+    if (educationSecondLevel.length < 1) {
+      navigate("/technical-and-higher");
+    }
+  }, []);
+
+  const handleSubmit = () => {
+    if (educationSecondLevel.length > 0) {
+      navigate("/olympics");
+    } else {
+      navigate("/technical-and-higher");
+    }
+  };
+
   return (
     <>
-      <form action="" className="flex flex-col gap-5 mb-10 ">
+      <form
+        action=""
+        className="flex flex-col gap-5 mb-10 "
+        onSubmit={handleSubmit}
+      >
         <div className=" min-w-[550px] w-full z-10 rounded-xl bg-transparent  py-8 px-8 h-[610px] overflow-y-auto shadow max-w-lg flex flex-col gap-4">
           <h1 className="text-PrimaryColor text-[18px]">
             Orta texniki və ali təhsil usulları
@@ -25,21 +47,26 @@ const Remember: React.FC = () => {
           <div className="w-full space-y-7 ">
             {educationSecondLevel &&
               educationSecondLevel.map((edu, index) => (
-                <div className="border rounded-full flex justify-between  items-center mb-5">
+                <div
+                  key={index}
+                  className="border rounded-full flex justify-between  items-center mb-5"
+                >
                   <div className="w-36 rounded-l-full flex items-center bg-LightColor ">
                     <div className="flex gap-5 px-5 py-1 ">
                       <span>{index + 1}.</span>
                       <span>{edu?.companyName}</span>
                     </div>
                   </div>
-                  <div className="border-r">
-                    <div>
-                      <span>{edu?.profession}</span>
-                    </div>
+
+                  <div>
+                    <span>{edu?.profession}</span>
                   </div>
                   <div className="w-14 rounded-r-full flex items-center bg-LightColor ">
                     <div className="flex items-center justify-center w-full  h-full">
-                      <span className="cursor-pointer  py-2">
+                      <span
+                        className="cursor-pointer  py-2"
+                        onClick={() => dispatch(deleteEducation(index))}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -71,20 +98,8 @@ const Remember: React.FC = () => {
           </div>
         </div>
         <div className="w-full flex items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center justify-center gap-3 w-[180px] border border-PrimaryColor text-PrimaryColor rounded-full py-4"
-          >
-            <img src={arrowLeft} alt="right" />
-            <span>Geri</span>
-          </Link>
-          <button
-            type="button"
-            className="flex items-center justify-center gap-3 w-[180px] bg-PrimaryColor text-white rounded-full py-4"
-          >
-            <span>Növbəti</span>
-            <img src={arrowRight} alt="right" />
-          </button>
+          <BackLink path="/technical-and-higher" text="Geri" />
+          <NextBtn text="Növbəti" />
         </div>
       </form>
     </>

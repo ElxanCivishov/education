@@ -64,6 +64,9 @@ const educationLevelSlice = createSlice({
     addEducation: (state, action: PayloadAction<EducationSecondLevelProps>) => {
       state.educationSecondLevel.push(action.payload);
     },
+    deleteEducation: (state, action: PayloadAction<number>) => {
+      state.educationSecondLevel.splice(action.payload, 1);
+    },
     updateEducationOlympicsLevel: (
       state,
       action: PayloadAction<Partial<EducationOlympicsLevelProps>>
@@ -79,6 +82,7 @@ const educationLevelSlice = createSlice({
 export const {
   updateEducationFirstLevel,
   addEducation,
+  deleteEducation,
   updateEducationOlympicsLevel,
 } = educationLevelSlice.actions;
 
