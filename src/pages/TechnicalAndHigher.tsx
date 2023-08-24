@@ -223,12 +223,6 @@ const TechnicalAndHigher: React.FC = () => {
                   : educationFirstLevel.edu !== "Peşə təhsili" &&
                     educationSecondLevel.length === 0
                   ? "Bakalavr - "
-                  : educationFirstLevel.edu !== "Peşə təhsili" &&
-                    educationSecondLevel.length === 1
-                  ? "Magistr"
-                  : educationFirstLevel.edu !== "Peşə təhsili" &&
-                    educationSecondLevel.length === 2
-                  ? "HbD"
                   : educationSecondLevel.length + 1 + "-ci"}
 
                 <span className="text-black ms-1">təhsilinizi qeyd edin</span>
@@ -251,7 +245,9 @@ const TechnicalAndHigher: React.FC = () => {
                 : educationFirstLevel.edu === "Peşə təhsili" &&
                   educationSecondLevel.length === 0
                 ? "Peşə təhsili"
-                : educationSecondLevel.length + 1 + "-ci"}
+                : educationSecondLevel.length >= 0
+                ? educationSecondLevel.length + 1 + "-ci"
+                : educationFirstLevel.edu}
               <span className="text-black ms-1">
                 təhsilinizlə bağlı detalları qeyd edin:
               </span>
