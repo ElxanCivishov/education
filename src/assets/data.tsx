@@ -1,5 +1,3 @@
-import { appealExam } from "../features/education/educationLevelSlice";
-
 export const employments: string[] = [
   "Təhsil alıram",
   "Çalışıram",

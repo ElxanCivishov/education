@@ -17,7 +17,7 @@ const Remember: React.FC = () => {
     if (educationSecondLevel.length < 1) {
       navigate("/technical-and-higher");
     }
-  }, []);
+  }, [navigate, educationSecondLevel]);
 
   const handleSubmit = () => {
     if (educationSecondLevel.length > 0) {
