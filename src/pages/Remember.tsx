@@ -1,23 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
-import { BackLink, Level, NextBtn } from "../components";
-import { deleteEducation } from "../features/education/educationLevelSlice";
+import { BackLink, Level, NextBtn, DeleteModal } from "../components";
+import { closeModal } from "../uitils/closeModal";
 
 const Remember: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { educationSecondLevel } = useSelector(
     (state: RootState) => state.educationLevel
   );
+
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     if (educationSecondLevel.length < 1) {
       navigate("/technical-and-higher");
     }
   }, [navigate, educationSecondLevel]);
+
+  useEffect(() => {
+    closeModal(handleClose);
+  }, [openDelete]);
 
   const handleSubmit = () => {
     if (educationSecondLevel.length > 0) {
@@ -27,11 +35,27 @@ const Remember: React.FC = () => {
     }
   };
 
+  const handleClose = () => {
+    setOpenDelete(false);
+    setDeleteId(null);
+  };
+
+  const handleDelete = (id: number | null) => {
+    setDeleteId(id);
+    console.log(id);
+    setOpenDelete(true);
+  };
+
   return (
     <>
+      {openDelete && (
+        <>
+          <DeleteModal id={deleteId} handleClose={handleClose} />
+        </>
+      )}
       <form
         action=""
-        className="flex flex-col gap-5 mb-10 "
+        className="flex flex-col gap-5 mb-10 z-10"
         onSubmit={handleSubmit}
       >
         <div className=" min-w-[550px] w-full z-10 rounded-xl bg-transparent  py-8 px-8 h-[610px] overflow-y-auto shadow max-w-lg flex flex-col gap-4">
@@ -65,7 +89,10 @@ const Remember: React.FC = () => {
                     <div className="flex items-center justify-center w-full  h-full">
                       <span
                         className="cursor-pointer  py-2"
-                        onClick={() => dispatch(deleteEducation(index))}
+                        onClick={(e) => {
+                          setDeleteId(index);
+                          setOpenDelete(true);
+                        }}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

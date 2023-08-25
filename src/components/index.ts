@@ -10,3 +10,4 @@ export { default as Level } from "./Level";
 export { default as MainLayout } from "./MainLayout";
 export { default as NextBtn } from "./NextBtn";
 export { default as SaveButton } from "./SaveButton";
+export { default as DeleteModal } from "./DeleteModal";
