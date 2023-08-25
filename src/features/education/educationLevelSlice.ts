@@ -67,6 +67,9 @@ const educationLevelSlice = createSlice({
     deleteEducation: (state, action: PayloadAction<number>) => {
       state.educationSecondLevel.splice(action.payload, 1);
     },
+    resetEducation: (state) => {
+      state.educationSecondLevel = [];
+    },
     updateEducationOlympicsLevel: (
       state,
       action: PayloadAction<Partial<EducationOlympicsLevelProps>>
@@ -90,6 +93,7 @@ export const {
   deleteEducation,
   updateEducationOlympicsLevel,
   resetEducationOlympicsLevel,
+  resetEducation,
 } = educationLevelSlice.actions;
 
 export default educationLevelSlice.reducer;

@@ -205,6 +205,15 @@ const TechnicalAndHigher: React.FC = () => {
       dateRange.startDate &&
       dateRange.endDate
     ) {
+      // educationFirstLevel.edu !== "Peşə təhsili" &&
+      // educationSecondLevel.length === 0
+      //   ? setSelectedEdu("Bakalavr")
+      //   : educationSecondLevel.length === 1
+      //   ? setSelectedEdu("Magistr")
+      //   : educationSecondLevel.length === 2
+      //   ? setSelectedEdu("PhD")
+      //   : "";}
+
       const updatedVocationData = {
         educationType: selectedEdu ? selectedEdu : educationFirstLevel.edu,
         country: selectedCountry,
@@ -249,17 +258,15 @@ const TechnicalAndHigher: React.FC = () => {
             <Level level={3} active={false} />
           </div>
 
-          {educationSecondLevel.length > 0 && (
+          {((educationSecondLevel.length > 0 &&
+            (educationFirstLevel.edu === "Peşə təhsili" ||
+              educationFirstLevel.edu === "Bakalavr")) ||
+            (educationSecondLevel.length > 1 &&
+              educationFirstLevel.edu === "Magistr") ||
+            educationSecondLevel.length > 2) && (
             <div className="w-full">
               <p className="mb-2 text-PrimaryColor">
-                {educationFirstLevel.edu === "Peşə təhsili" &&
-                educationSecondLevel.length === 0
-                  ? "Peşə təhsili - "
-                  : educationFirstLevel.edu !== "Peşə təhsili" &&
-                    educationSecondLevel.length === 0
-                  ? "Bakalavr - "
-                  : educationSecondLevel.length + 1 + "-ci"}
-
+                {educationSecondLevel.length + 1 + "-ci "}
                 <span className="text-black ms-1">təhsilinizi qeyd edin</span>
               </p>
               <Dropdown
@@ -275,14 +282,17 @@ const TechnicalAndHigher: React.FC = () => {
           )}
           <div className="w-full">
             <p className="mb-2 text-PrimaryColor">
-              {selectedEdu
-                ? selectedEdu
-                : educationFirstLevel.edu === "Peşə təhsili" &&
-                  educationSecondLevel.length === 0
+              {educationFirstLevel.edu === "Peşə təhsili" &&
+              educationSecondLevel.length === 0
                 ? "Peşə təhsili - "
-                : educationSecondLevel.length >= 0
-                ? educationSecondLevel.length + 1 + "-ci"
-                : educationFirstLevel.edu}
+                : educationFirstLevel.edu !== "Peşə təhsili" &&
+                  educationSecondLevel.length === 0
+                ? "Bakalavr - "
+                : educationSecondLevel.length === 1
+                ? "Magistr"
+                : educationSecondLevel.length === 2
+                ? "PhD"
+                : educationSecondLevel.length + 1 + " -ci "}
               <span className="text-black ms-1">
                 təhsilinizlə bağlı detalları qeyd edin:
               </span>

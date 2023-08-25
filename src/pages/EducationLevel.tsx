@@ -9,7 +9,10 @@ import {
   educationLevels,
 } from "../assets/data";
 
-import { updateEducationFirstLevel } from "../features/education/educationLevelSlice";
+import {
+  updateEducationFirstLevel,
+  resetEducation,
+} from "../features/education/educationLevelSlice";
 import { RootState } from "../app/store";
 import { closeDropdown } from "../uitils/closeDropdown";
 
@@ -46,6 +49,12 @@ const EducationLevel: React.FC = () => {
       removeClickListener();
     };
   }, []);
+
+  useEffect(() => {
+    if (educationFirstLevel.edu !== selectedEdu) {
+      dispatch(resetEducation());
+    }
+  }, [selectedEdu, dispatch, educationFirstLevel]);
 
   const handleCloseClickOutside = () => {
     setOpenEmployment(false);
