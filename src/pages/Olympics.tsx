@@ -44,7 +44,9 @@ const Olympics: React.FC = () => {
     if (!educationFirstLevel.edu) {
       navigate("/");
     }
+  }, [navigate, educationFirstLevel.edu]);
 
+  useEffect(() => {
     const removeClickListener = closeDropdown({
       handleClose: handleCloseClickOutside,
     });

@@ -69,7 +69,9 @@ const TechnicalAndHigher: React.FC = () => {
     ) {
       navigate("/");
     }
+  }, [openApplicationCriteria, navigate, educationFirstLevel]);
 
+  useEffect(() => {
     const removeClickListener = closeDropdown({
       handleClose: handleCloseClickOutside,
     });
@@ -175,6 +177,7 @@ const TechnicalAndHigher: React.FC = () => {
       if (item.title === title) {
         return (item.results[field] = e.target.value);
       }
+      return item;
     });
     setAppealItems(updatedItems);
     console.log(appealItems);
