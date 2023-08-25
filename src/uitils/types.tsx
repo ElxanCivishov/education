@@ -5,8 +5,8 @@ export interface DateRange {
 
 export interface localExam {
   exam: string;
-  examScore: number | string;
-  totalScore: number | string;
+  examScore: number;
+  totalScore: number;
 }
 
 export interface appealExamProps {

@@ -14,8 +14,6 @@ export const closeDropdown = ({ handleClose }: CloseDropdownProps) => {
     }
   };
 
-  console.log(dropdowns);
-
   window.addEventListener("click", handleClickOutside);
 
   return () => {

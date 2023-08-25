@@ -7,8 +7,8 @@ export const initialDateRange: DateRange = {
 
 export const initialLocalExam: localExam = {
   exam: "",
-  examScore: "",
-  totalScore: "",
+  examScore: 0,
+  totalScore: 0,
 };
 
 export const inititalAppealItems = [

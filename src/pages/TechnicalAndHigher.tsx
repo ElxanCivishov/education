@@ -61,6 +61,10 @@ const TechnicalAndHigher: React.FC = () => {
   const [selectedApplicationCriteria, setSelectedApplicationCriteria] =
     useState<appealExam[]>([]);
 
+  const [selectedCriterion, setSelectedCriterion] = useState<
+    number | undefined
+  >();
+
   useEffect(() => {
     if (
       !educationFirstLevel.edu ||
@@ -154,7 +158,6 @@ const TechnicalAndHigher: React.FC = () => {
           (appeal) => appeal.title !== item.title
         );
         setAppealItems(updatedAppealItems);
-        console.log(updatedAppealItems);
         return updatedItems;
       });
     } else {
@@ -180,13 +183,22 @@ const TechnicalAndHigher: React.FC = () => {
       return item;
     });
     setAppealItems(updatedItems);
-    console.log(appealItems);
   };
 
   const handleSaveButton = () => {
-    if (localExamScore.examScore > localExamScore.totalScore) {
-      setCheckValidate(true);
-    } else if (
+    if (selectedCriterion === 0) {
+      if (
+        localExamScore.exam === "" ||
+        localExamScore.examScore === 0 ||
+        localExamScore.totalScore === 0 ||
+        +localExamScore.examScore > +localExamScore.totalScore
+      ) {
+        setCheckValidate(true);
+        return;
+      }
+    }
+
+    if (
       selectedCountry &&
       collageName &&
       selectedPrefession &&
@@ -204,6 +216,7 @@ const TechnicalAndHigher: React.FC = () => {
       };
 
       dispatch(addEducation(updatedVocationData));
+      setLocalExamScore(initialLocalExam);
       navigate("/remember");
     } else {
       setCheckValidate(true);
@@ -368,6 +381,8 @@ const TechnicalAndHigher: React.FC = () => {
             toggleItemApplicationCriteria={toggleItemApplicationCriteria}
             selectedApplicationCriteria={selectedApplicationCriteria}
             handleInputChange={handleInputChange}
+            selectedCriterion={selectedCriterion}
+            setSelectedCriterion={setSelectedCriterion}
           />
           <div className="flex items-center justify-center w-full mt-5 mb-10">
             <SaveButton handleClick={handleSaveButton} text="Yadda saxla" />

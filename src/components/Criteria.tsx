@@ -4,7 +4,6 @@ import { applicationCriteria, criteria } from "../assets/data";
 import FormInput from "./FormInput";
 import { localExam } from "../uitils/types";
 import { appealExam } from "../features/education/educationLevelSlice";
-import { useState } from "react";
 
 interface criteriaProps {
   checkValidate: boolean;
@@ -14,6 +13,10 @@ interface criteriaProps {
   openApplicationCriteria: boolean;
   toggleItemApplicationCriteria: any;
   selectedApplicationCriteria: appealExam[];
+  selectedCriterion: number | undefined;
+  setSelectedCriterion: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
   handleInputChange: (
     e: React.ChangeEvent<HTMLInputElement>,
     title: string,
@@ -30,11 +33,9 @@ const Criteria: React.FC<criteriaProps> = ({
   toggleItemApplicationCriteria,
   selectedApplicationCriteria,
   handleInputChange,
+  selectedCriterion,
+  setSelectedCriterion,
 }) => {
-  const [selectedCriterion, setSelectedCriterion] = useState<
-    number | undefined
-  >();
-
   return (
     <div>
       <div className="w-full items-center ">
@@ -79,18 +80,18 @@ const Criteria: React.FC<criteriaProps> = ({
               name="exam"
             />
             <FormInput
-              type="text"
-              value={localExamScore.examScore}
+              type="number"
+              value={localExamScore.examScore ? localExamScore.examScore : ""}
               handleChange={handleChangeLocalExam}
               placeholder="balınız"
               checkValidate={checkValidate}
               name="examScore"
+              max={localExamScore.totalScore}
               min={0}
-              max={+localExamScore.totalScore || 0}
             />
             <FormInput
               type="number"
-              value={localExamScore.totalScore}
+              value={localExamScore.totalScore ? localExamScore.totalScore : ""}
               handleChange={handleChangeLocalExam}
               placeholder="max bal"
               checkValidate={checkValidate}
