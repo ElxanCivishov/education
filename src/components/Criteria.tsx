@@ -1,10 +1,10 @@
-import { useState } from "react";
 import downIcon from "../assets/images/down.svg";
 
 import { applicationCriteria, criteria } from "../assets/data";
 import FormInput from "./FormInput";
 import { localExam } from "../uitils/types";
 import { appealExam } from "../features/education/educationLevelSlice";
+import { useState } from "react";
 
 interface criteriaProps {
   checkValidate: boolean;
@@ -85,21 +85,24 @@ const Criteria: React.FC<criteriaProps> = ({
               placeholder="balınız"
               checkValidate={checkValidate}
               name="examScore"
+              min={0}
+              max={+localExamScore.totalScore || 0}
             />
             <FormInput
-              type="text"
+              type="number"
               value={localExamScore.totalScore}
               handleChange={handleChangeLocalExam}
               placeholder="max bal"
               checkValidate={checkValidate}
               name="totalScore"
+              min={0}
             />
           </div>
         </div>
       )}
 
       {(selectedCriterion === 1 || selectedCriterion === 2) && (
-        <div className="w-full mt-3">
+        <div className="dropdown w-full mt-3">
           <p className="mb-2 mt-3">
             Müraciət zamanı hansı kriteriyalarla müraciətinizin
             qiymətləndirildiyini qeyd edin:

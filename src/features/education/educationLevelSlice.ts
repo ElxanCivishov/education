@@ -76,6 +76,11 @@ const educationLevelSlice = createSlice({
         ...action.payload,
       };
     },
+    resetEducationOlympicsLevel: (state) => {
+      state.educationOlympicsLevel.subject = "";
+      state.educationOlympicsLevel.place = "";
+      state.educationOlympicsLevel.stage = "";
+    },
   },
 });
 
@@ -84,6 +89,7 @@ export const {
   addEducation,
   deleteEducation,
   updateEducationOlympicsLevel,
+  resetEducationOlympicsLevel,
 } = educationLevelSlice.actions;
 
 export default educationLevelSlice.reducer;

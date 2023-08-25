@@ -52,8 +52,14 @@ const TechnicalAndHigher: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange>(initialDateRange);
   const [dateIsPresent, setDateIsPresent] = useState<boolean>(false);
 
+  const [openApplicationCriteria, setOpenApplicationCriteria] =
+    useState<boolean>(false);
+
   const [localExamScore, setLocalExamScore] =
     useState<localExam>(initialLocalExam);
+
+  const [selectedApplicationCriteria, setSelectedApplicationCriteria] =
+    useState<appealExam[]>([]);
 
   useEffect(() => {
     if (
@@ -71,7 +77,7 @@ const TechnicalAndHigher: React.FC = () => {
     return () => {
       removeClickListener();
     };
-  }, []);
+  }, [openApplicationCriteria]);
 
   const handleChangeLocalExam = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -132,11 +138,6 @@ const TechnicalAndHigher: React.FC = () => {
   };
 
   // ! appeal
-  const [openApplicationCriteria, setOpenApplicationCriteria] =
-    useState<boolean>(false);
-
-  const [selectedApplicationCriteria, setSelectedApplicationCriteria] =
-    useState<appealExam[]>([]);
 
   const toggleItemApplicationCriteria = (item: appealExam) => {
     const existingIndex = selectedApplicationCriteria.findIndex(
@@ -180,7 +181,9 @@ const TechnicalAndHigher: React.FC = () => {
   };
 
   const handleSaveButton = () => {
-    if (
+    if (localExamScore.examScore > localExamScore.totalScore) {
+      setCheckValidate(true);
+    } else if (
       selectedCountry &&
       collageName &&
       selectedPrefession &&

@@ -1,35 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Level, BackLink, NextBtn, Dropdown } from "../components";
 
 import { subjects, olympicsPlaces, olympicsStages } from "../assets/data";
-import { updateEducationOlympicsLevel } from "../features/education/educationLevelSlice";
+import {
+  resetEducationOlympicsLevel,
+  updateEducationOlympicsLevel,
+} from "../features/education/educationLevelSlice";
 import { closeDropdown } from "../uitils/closeDropdown";
+import { RootState } from "../app/store";
 
 const olymipcsStatus: string[] = ["Bəli", "Xeyr"];
 
 const Olympics: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { educationOlympicsLevel, educationFirstLevel } = useSelector(
+    (state: RootState) => state.educationLevel
+  );
 
   const [checkValidate, setCheckValidate] = useState<boolean>(false);
   const [selectedStatus, setSelectedStatus] = useState<number>();
 
   const [openSubject, setOpenSubject] = useState<boolean>(false);
-  const [selectedSubject, setSelectedSubject] = useState<string>("");
+  const [selectedSubject, setSelectedSubject] = useState<string>(
+    educationOlympicsLevel.subject
+  );
 
   const [openOlympicsStages, setOpenOlympicsStages] = useState<boolean>(false);
-  const [selectedOlympicsStages, setSelectedOlympicsStages] =
-    useState<string>("");
+  const [selectedOlympicsStages, setSelectedOlympicsStages] = useState<string>(
+    educationOlympicsLevel.stage
+  );
 
   const [openOlympicsPlace, setOpenOlympicsPlace] = useState<boolean>(false);
 
-  const [selectedOlympicsPlace, setSelectedOlympicsPlace] =
-    useState<string>("");
+  const [selectedOlympicsPlace, setSelectedOlympicsPlace] = useState<string>(
+    educationOlympicsLevel.place
+  );
 
   useEffect(() => {
+    if (!educationFirstLevel.edu) {
+      navigate("/");
+    }
+
     const removeClickListener = closeDropdown({
       handleClose: handleCloseClickOutside,
     });
@@ -78,6 +93,7 @@ const Olympics: React.FC = () => {
         navigate("/");
       }
     } else {
+      dispatch(resetEducationOlympicsLevel());
       navigate("/");
     }
   };

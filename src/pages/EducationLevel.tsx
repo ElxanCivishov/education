@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Dropdown, Level, NextBtn } from "../components";
@@ -11,24 +11,47 @@ import {
 
 import { updateEducationFirstLevel } from "../features/education/educationLevelSlice";
 import { RootState } from "../app/store";
+import { closeDropdown } from "../uitils/closeDropdown";
 
 const EducationLevel: React.FC = () => {
-  const { educationSecondLevel } = useSelector(
+  const { educationSecondLevel, educationFirstLevel } = useSelector(
     (state: RootState) => state.educationLevel
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [openEmployment, setOpenEmployment] = useState<boolean>(false);
-  const [selectedEmployment, setSelectedEmployment] = useState<string>("");
+  const [selectedEmployment, setSelectedEmployment] = useState<string>(
+    educationFirstLevel.employment
+  );
 
   const [openEdu, setOpenEdu] = useState<boolean>(false);
-  const [selectedEdu, setSelectedEdu] = useState<string>("");
+  const [selectedEdu, setSelectedEdu] = useState<string>(
+    educationFirstLevel.edu
+  );
 
   const [openSchoolResult, setOpenSchoolResult] = useState<boolean>(false);
-  const [selectedSchoolResult, setSelectedSchoolResult] = useState<string>("");
+  const [selectedSchoolResult, setSelectedSchoolResult] = useState<string>(
+    educationFirstLevel.schollResult
+  );
 
   const [checkValidate, setCheckValidate] = useState<boolean>(false);
+
+  useEffect(() => {
+    const removeClickListener = closeDropdown({
+      handleClose: handleCloseClickOutside,
+    });
+
+    return () => {
+      removeClickListener();
+    };
+  }, []);
+
+  const handleCloseClickOutside = () => {
+    setOpenEmployment(false);
+    setOpenSchoolResult(false);
+    setOpenEdu(false);
+  };
 
   const handleSelectEmploye = () => {
     setOpenEmployment(!openEmployment);
