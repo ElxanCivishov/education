@@ -33,7 +33,7 @@ const DropdownWithSearch: React.FC<DropdownProps> = ({
   );
 
   return (
-    <div className="relative w-full">
+    <div className="dropdown relative w-full">
       <label
         className={`relative w-full flex items-center justify-between px-3 py-2 bg-LightColor rounded-full cursor-pointer ${
           checkValidate && !selectedItem

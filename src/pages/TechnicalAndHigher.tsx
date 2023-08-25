@@ -25,21 +25,12 @@ import {
   DropdownWithSearch,
   DateInput,
 } from "../components";
+import { closeDropdown } from "../uitils/closeDropdown";
 
 const TechnicalAndHigher: React.FC = () => {
   const { educationSecondLevel, educationFirstLevel } = useSelector(
     (state: RootState) => state.educationLevel
   );
-
-  useEffect(() => {
-    if (
-      !educationFirstLevel.edu ||
-      !educationFirstLevel.employment ||
-      !educationFirstLevel.schollResult
-    ) {
-      navigate("/");
-    }
-  }, []);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -63,6 +54,24 @@ const TechnicalAndHigher: React.FC = () => {
 
   const [localExamScore, setLocalExamScore] =
     useState<localExam>(initialLocalExam);
+
+  useEffect(() => {
+    if (
+      !educationFirstLevel.edu ||
+      !educationFirstLevel.employment ||
+      !educationFirstLevel.schollResult
+    ) {
+      navigate("/");
+    }
+
+    const removeClickListener = closeDropdown({
+      handleClose: handleCloseClickOutside,
+    });
+
+    return () => {
+      removeClickListener();
+    };
+  }, []);
 
   const handleChangeLocalExam = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -113,6 +122,13 @@ const TechnicalAndHigher: React.FC = () => {
     setOpenPrefession(false);
     setOpenEdu(false);
     setOpenApplicationCriteria(!openApplicationCriteria);
+  };
+
+  const handleCloseClickOutside = () => {
+    setOpenCountry(false);
+    setOpenPrefession(false);
+    setOpenEdu(false);
+    setOpenApplicationCriteria(false);
   };
 
   // ! appeal
@@ -244,7 +260,7 @@ const TechnicalAndHigher: React.FC = () => {
                 ? selectedEdu
                 : educationFirstLevel.edu === "Peşə təhsili" &&
                   educationSecondLevel.length === 0
-                ? "Peşə təhsili"
+                ? "Peşə təhsili - "
                 : educationSecondLevel.length >= 0
                 ? educationSecondLevel.length + 1 + "-ci"
                 : educationFirstLevel.edu}

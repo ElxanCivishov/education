@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
@@ -6,6 +6,7 @@ import { Level, BackLink, NextBtn, Dropdown } from "../components";
 
 import { subjects, olympicsPlaces, olympicsStages } from "../assets/data";
 import { updateEducationOlympicsLevel } from "../features/education/educationLevelSlice";
+import { closeDropdown } from "../uitils/closeDropdown";
 
 const olymipcsStatus: string[] = ["Bəli", "Xeyr"];
 
@@ -27,6 +28,22 @@ const Olympics: React.FC = () => {
 
   const [selectedOlympicsPlace, setSelectedOlympicsPlace] =
     useState<string>("");
+
+  useEffect(() => {
+    const removeClickListener = closeDropdown({
+      handleClose: handleCloseClickOutside,
+    });
+
+    return () => {
+      removeClickListener();
+    };
+  }, [selectedStatus]);
+
+  const handleCloseClickOutside = () => {
+    setOpenSubject(false);
+    setOpenOlympicsPlace(false);
+    setOpenOlympicsStages(false);
+  };
 
   const handleSubject = () => {
     setOpenSubject(!openSubject);
