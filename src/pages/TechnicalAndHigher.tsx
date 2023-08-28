@@ -66,16 +66,16 @@ const TechnicalAndHigher: React.FC = () => {
   >();
 
   useEffect(() => {
-    if (
-      !educationFirstLevel.edu ||
-      !educationFirstLevel.employment ||
-      !educationFirstLevel.schollResult
-    ) {
-      checkEducationType();
+    const hasCompleteEducationInfo =
+      educationFirstLevel.edu &&
+      educationFirstLevel.employment &&
+      educationFirstLevel.schollResult;
 
+    if (!hasCompleteEducationInfo) {
+      checkEducationType();
       navigate("/");
     }
-  }, [dispatch, navigate, educationFirstLevel, educationSecondLevel]);
+  }, [dispatch, navigate, educationFirstLevel]);
 
   useEffect(() => {
     const removeClickListener = closeDropdown({
