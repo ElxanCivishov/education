@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -65,34 +65,7 @@ const TechnicalAndHigher: React.FC = () => {
     number | undefined
   >();
 
-  useEffect(() => {
-    const hasCompleteEducationInfo =
-      educationFirstLevel.edu &&
-      educationFirstLevel.employment &&
-      educationFirstLevel.schollResult;
-
-    if (!hasCompleteEducationInfo) {
-      checkEducationType();
-      navigate("/");
-    }
-  }, [dispatch, navigate, educationFirstLevel]);
-
-  useEffect(() => {
-    const removeClickListener = closeDropdown({
-      handleClose: handleCloseClickOutside,
-    });
-
-    return () => {
-      removeClickListener();
-    };
-  }, [openApplicationCriteria]);
-
-  const handleChangeLocalExam = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLocalExamScore({ ...localExamScore, [name]: value });
-  };
-
-  const checkEducationType = () => {
+  const checkEducationType = useCallback(() => {
     if (
       (educationFirstLevel.edu === "Peşə təhsili" ||
         educationFirstLevel.edu === "Bakalavr") &&
@@ -122,6 +95,39 @@ const TechnicalAndHigher: React.FC = () => {
         setSelectedEdu("PhD");
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const hasCompleteEducationInfo =
+      educationFirstLevel.edu &&
+      educationFirstLevel.employment &&
+      educationFirstLevel.schollResult;
+
+    if (!hasCompleteEducationInfo) {
+      checkEducationType();
+      navigate("/");
+    }
+  }, [
+    dispatch,
+    navigate,
+    educationFirstLevel,
+    checkEducationType,
+    educationSecondLevel,
+  ]);
+
+  useEffect(() => {
+    const removeClickListener = closeDropdown({
+      handleClose: handleCloseClickOutside,
+    });
+
+    return () => {
+      removeClickListener();
+    };
+  }, [openApplicationCriteria]);
+
+  const handleChangeLocalExam = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLocalExamScore({ ...localExamScore, [name]: value });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
