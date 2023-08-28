@@ -102,16 +102,16 @@ const TechnicalAndHigher: React.FC = () => {
       educationFirstLevel.employment &&
       educationFirstLevel.schollResult;
 
+    checkEducationType();
     if (!hasCompleteEducationInfo) {
-      checkEducationType();
       navigate("/");
     }
   }, [
     dispatch,
     navigate,
     educationFirstLevel,
-    checkEducationType,
     educationSecondLevel,
+    checkEducationType,
   ]);
 
   useEffect(() => {
