@@ -65,7 +65,7 @@ const TechnicalAndHigher: React.FC = () => {
     number | undefined
   >();
 
-  const checkEducationType = useCallback(() => {
+  const checkEducationType = () => {
     if (
       (educationFirstLevel.edu === "Peşə təhsili" ||
         educationFirstLevel.edu === "Bakalavr") &&
@@ -95,7 +95,7 @@ const TechnicalAndHigher: React.FC = () => {
         setSelectedEdu("PhD");
       }
     }
-  }, []);
+  };
 
   useEffect(() => {
     const hasCompleteEducationInfo =
