@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
 import { BackLink, Level, NextBtn, DeleteModal } from "../components";
 import { closeModal } from "../uitils/closeModal";
+import { useSelector } from "react-redux";
 
 const Remember: React.FC = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { educationSecondLevel } = useSelector(
@@ -38,12 +37,6 @@ const Remember: React.FC = () => {
   const handleClose = () => {
     setOpenDelete(false);
     setDeleteId(null);
-  };
-
-  const handleDelete = (id: number | null) => {
-    setDeleteId(id);
-    console.log(id);
-    setOpenDelete(true);
   };
 
   return (
