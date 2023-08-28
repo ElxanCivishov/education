@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -65,7 +65,7 @@ const TechnicalAndHigher: React.FC = () => {
     number | undefined
   >();
 
-  const checkEducationType = () => {
+  const checkEducationType = useCallback(() => {
     if (
       (educationFirstLevel.edu === "Peşə təhsili" ||
         educationFirstLevel.edu === "Bakalavr") &&
@@ -84,7 +84,6 @@ const TechnicalAndHigher: React.FC = () => {
     ) {
       if (educationSecondLevel[0].educationType === "Magistratura") {
         setSelectedEdu("Bakalavr");
-        console.log(selectedEdu);
       } else {
         setSelectedEdu("Magistratura");
       }
@@ -95,7 +94,7 @@ const TechnicalAndHigher: React.FC = () => {
         setSelectedEdu("PhD");
       }
     }
-  };
+  }, [educationFirstLevel, educationSecondLevel]);
 
   useEffect(() => {
     const hasCompleteEducationInfo =
