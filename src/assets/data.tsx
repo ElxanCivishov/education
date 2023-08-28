@@ -10,14 +10,14 @@ export const educationLevels: string[] = [
   "Orta təhsil",
   "Peşə təhsili",
   "Bakalavr",
-  "Magistr",
+  "Magistratura",
   "PhD",
 ];
 
 export const eduLevels: string[] = [
   "Peşə təhsili",
   "Bakalavr",
-  "Magistr",
+  "Magistratura",
   "PhD",
 ];
 

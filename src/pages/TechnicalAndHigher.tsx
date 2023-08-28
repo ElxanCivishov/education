@@ -66,6 +66,7 @@ const TechnicalAndHigher: React.FC = () => {
   >();
 
   useEffect(() => {
+    checkEducationType();
     if (
       !educationFirstLevel.edu ||
       !educationFirstLevel.employment ||
@@ -73,7 +74,7 @@ const TechnicalAndHigher: React.FC = () => {
     ) {
       navigate("/");
     }
-  }, [openApplicationCriteria, navigate, educationFirstLevel]);
+  }, [dispatch, navigate, educationFirstLevel, educationSecondLevel]);
 
   useEffect(() => {
     const removeClickListener = closeDropdown({
@@ -88,6 +89,38 @@ const TechnicalAndHigher: React.FC = () => {
   const handleChangeLocalExam = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLocalExamScore({ ...localExamScore, [name]: value });
+  };
+
+  const checkEducationType = () => {
+    if (
+      (educationFirstLevel.edu === "Peşə təhsili" ||
+        educationFirstLevel.edu === "Bakalavr") &&
+      educationSecondLevel.length === 0
+    ) {
+      setSelectedEdu(educationFirstLevel.edu);
+    } else if (
+      (educationFirstLevel.edu === "Magistratura" ||
+        educationFirstLevel.edu === "PhD") &&
+      educationSecondLevel.length === 0
+    ) {
+      setSelectedEdu("Bakalavr");
+    } else if (
+      educationFirstLevel.edu === "Magistratura" &&
+      educationSecondLevel.length === 1
+    ) {
+      if (educationSecondLevel[0].educationType === "Magistratura") {
+        setSelectedEdu("Bakalavr");
+        console.log(selectedEdu);
+      } else {
+        setSelectedEdu("Magistratura");
+      }
+    } else if (educationFirstLevel.edu === "PhD") {
+      if (educationSecondLevel.length === 1) {
+        setSelectedEdu("Magistratura");
+      } else if (educationSecondLevel.length === 2) {
+        setSelectedEdu("PhD");
+      }
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,31 +238,77 @@ const TechnicalAndHigher: React.FC = () => {
       dateRange.startDate &&
       dateRange.endDate
     ) {
-      // educationFirstLevel.edu !== "Peşə təhsili" &&
-      // educationSecondLevel.length === 0
-      //   ? setSelectedEdu("Bakalavr")
-      //   : educationSecondLevel.length === 1
-      //   ? setSelectedEdu("Magistr")
-      //   : educationSecondLevel.length === 2
-      //   ? setSelectedEdu("PhD")
-      //   : "";}
+      if (
+        educationFirstLevel.edu === "Magistratura" &&
+        educationSecondLevel.length === 0
+      ) {
+        setSelectedEdu("Bakalavr");
+        handleAddToStore();
+      } else if (
+        educationFirstLevel.edu === "Magistratura" &&
+        educationSecondLevel.length === 1
+      ) {
+        setSelectedEdu("Magistratura");
+        handleAddToStore();
+        navigate("/remember");
+      } else if (
+        educationFirstLevel.edu === "PhD" &&
+        educationSecondLevel.length === 0
+      ) {
+        setSelectedEdu("Bakalavr");
+        handleAddToStore();
+      } else if (
+        educationFirstLevel.edu === "PhD" &&
+        educationSecondLevel.length === 1
+      ) {
+        setSelectedEdu("Magistratura");
+        handleAddToStore();
+      } else if (
+        educationFirstLevel.edu === "PhD" &&
+        educationSecondLevel.length === 2
+      ) {
+        setSelectedEdu("Phd");
+        navigate("/remember");
+        handleAddToStore();
+      } else {
+        handleAddToStore();
+        navigate("/remember");
+      }
 
-      const updatedVocationData = {
-        educationType: selectedEdu ? selectedEdu : educationFirstLevel.edu,
-        country: selectedCountry,
-        companyName: collageName,
-        profession: selectedPrefession,
-        dateRange,
-        localExam: localExamScore.exam ? localExamScore : undefined,
-        appealExam: appealItems,
-      };
-
-      dispatch(addEducation(updatedVocationData));
-      setLocalExamScore(initialLocalExam);
-      navigate("/remember");
+      resetInputs();
+      checkEducationType();
     } else {
       setCheckValidate(true);
     }
+  };
+
+  const handleAddToStore = () => {
+    const updatedVocationData = {
+      educationType: selectedEdu ? selectedEdu : educationFirstLevel.edu,
+      country: selectedCountry,
+      companyName: collageName,
+      profession: selectedPrefession,
+      dateRange,
+      localExam: localExamScore.exam ? localExamScore : undefined,
+      appealExam: appealItems,
+    };
+
+    dispatch(addEducation(updatedVocationData));
+    setLocalExamScore(initialLocalExam);
+  };
+
+  const resetInputs = () => {
+    setAppealItems([]);
+    setSelectedCountry("");
+    setSelectedEdu("");
+    setSelectedPrefession("");
+    setCollageName("");
+    setDateIsPresent(false);
+    setDateRange(initialDateRange);
+    setLocalExamScore(initialLocalExam);
+    setSelectedApplicationCriteria([]);
+    setSelectedCriterion(undefined);
+    setCheckValidate(false);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -262,7 +341,7 @@ const TechnicalAndHigher: React.FC = () => {
             (educationFirstLevel.edu === "Peşə təhsili" ||
               educationFirstLevel.edu === "Bakalavr")) ||
             (educationSecondLevel.length > 1 &&
-              educationFirstLevel.edu === "Magistr") ||
+              educationFirstLevel.edu === "Magistratura") ||
             educationSecondLevel.length > 2) && (
             <div className="w-full">
               <p className="mb-2 text-PrimaryColor">
@@ -282,16 +361,8 @@ const TechnicalAndHigher: React.FC = () => {
           )}
           <div className="w-full">
             <p className="mb-2 text-PrimaryColor">
-              {educationFirstLevel.edu === "Peşə təhsili" &&
-              educationSecondLevel.length === 0
-                ? "Peşə təhsili - "
-                : educationFirstLevel.edu !== "Peşə təhsili" &&
-                  educationSecondLevel.length === 0
-                ? "Bakalavr - "
-                : educationSecondLevel.length === 1
-                ? "Magistr"
-                : educationSecondLevel.length === 2
-                ? "PhD"
+              {selectedEdu
+                ? selectedEdu + " - "
                 : educationSecondLevel.length + 1 + " -ci "}
               <span className="text-black ms-1">
                 təhsilinizlə bağlı detalları qeyd edin:
