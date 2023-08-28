@@ -66,12 +66,13 @@ const TechnicalAndHigher: React.FC = () => {
   >();
 
   useEffect(() => {
-    checkEducationType();
     if (
       !educationFirstLevel.edu ||
       !educationFirstLevel.employment ||
       !educationFirstLevel.schollResult
     ) {
+      checkEducationType();
+
       navigate("/");
     }
   }, [dispatch, navigate, educationFirstLevel, educationSecondLevel]);
@@ -276,7 +277,6 @@ const TechnicalAndHigher: React.FC = () => {
       }
 
       resetInputs();
-      checkEducationType();
     } else {
       setCheckValidate(true);
     }
